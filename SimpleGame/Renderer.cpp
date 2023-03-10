@@ -4,6 +4,7 @@
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
 	Initialize(windowSizeX, windowSizeY);
+	CreateVBO();
 }
 
 
@@ -182,8 +183,37 @@ void Renderer::DrawSolidRect(float x, float y, float z, float size, float r, flo
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Renderer::Render()
+{
+	//Program select
+	glUseProgram(m_SolidRectShader);
+
+	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_Trans"), 0, 0, 0, 1);
+	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_Color"), 1, 1, 1, 1);
+
+	//int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, m_testVBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	//glDisableVertexAttribArray(attribPosition);
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
 {
 	*newX = x * 2.f / m_WindowSizeX;
 	*newY = y * 2.f / m_WindowSizeY;
+}
+
+void Renderer::CreateVBO()
+{
+	float vertices[] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f };
+
+	glGenBuffers(1, &m_testVBO);	// get Buffer Ojbect ID
+	glBindBuffer(GL_ARRAY_BUFFER, m_testVBO);	// bind to array buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // 
 }
