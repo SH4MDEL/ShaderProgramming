@@ -34,6 +34,7 @@ private:
 
 	GLuint m_VBORect = 0;
 	GLuint m_SolidRectShader = 0;
-	GLuint m_testVBO = 0;
+	GLuint m_VBOPosition1 = 0;
+	GLuint m_VBOPosition2 = 0;
 };
 

@@ -168,8 +168,9 @@ void Renderer::DrawSolidRect(float x, float y, float z, float size, float r, flo
 	//Program select
 	glUseProgram(m_SolidRectShader);
 
-	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_Trans"), newX, newY, 0, size);
-	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_Color"), r, g, b, a);
+	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_trans"), newX, newY, 0, size);
+	glUniform1f(glGetUniformLocation(m_SolidRectShader, "u_scale"), newX);
+	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_color"), r, g, b, a);
 
 	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
 	glEnableVertexAttribArray(attribPosition);
@@ -188,13 +189,25 @@ void Renderer::Render()
 	//Program select
 	glUseProgram(m_SolidRectShader);
 
-	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_Trans"), 0, 0, 0, 1);
-	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_Color"), 1, 1, 1, 1);
+	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_trans"), 0, 0, 0, 1);
+	static float scale = 0.f;
+	if (scale < 1.f) scale += 0.001f;
+	else scale = 0.f;
+	glUniform1f(glGetUniformLocation(m_SolidRectShader, "u_scale"), scale);
+	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_color"), 1, 1, 1, 1);
 
-	//int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, m_testVBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	int attributePosition = glGetAttribLocation(m_SolidRectShader, "a_position");
+
+	glEnableVertexAttribArray(attributePosition);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPosition1);
+	glVertexAttribPointer(attributePosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	//glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPosition2);
+	glVertexAttribPointer(attributePosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -211,9 +224,15 @@ void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
 
 void Renderer::CreateVBO()
 {
-	float vertices[] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f };
+	float vertices1[] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f };
 
-	glGenBuffers(1, &m_testVBO);	// get Buffer Ojbect ID
-	glBindBuffer(GL_ARRAY_BUFFER, m_testVBO);	// bind to array buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // 
+	glGenBuffers(1, &m_VBOPosition1);	// get Buffer Ojbect ID
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPosition1);	// bind to array buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW); // 
+
+	float vertices2[] = { 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f, -1.0f, 0.0f };
+
+	glGenBuffers(1, &m_VBOPosition2);	// get Buffer Ojbect ID
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPosition2);	// bind to array buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW); // 
 }

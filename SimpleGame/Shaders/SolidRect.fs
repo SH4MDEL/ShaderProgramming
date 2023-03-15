@@ -2,9 +2,9 @@
 
 layout(location=0) out vec4 FragColor;
 
-uniform vec4 u_Color;
+uniform vec4 u_color;
 
 void main()
 {
-	FragColor = vec4(u_Color.r, u_Color.g, u_Color.b, u_Color.a);
+	FragColor = vec4(u_color.r, u_color.g, u_color.b, u_color.a);
 }
