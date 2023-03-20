@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#pragma once
 #include "Renderer.h"
 
 Renderer::Renderer(int windowSizeX, int windowSizeY)
@@ -20,6 +20,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 
 	//Load shaders
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
+	m_particleShader = CompileShaders("./Shaders/ParticleRect.vs", "./Shaders/ParticleRect.fs");
 	
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -190,30 +191,73 @@ void Renderer::Render()
 	glUseProgram(m_SolidRectShader);
 
 	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_trans"), 0, 0, 0, 1);
-	static float scale = 0.f;
-	if (scale < 1.f) scale += 0.001f;
-	else scale = 0.f;
-	glUniform1f(glGetUniformLocation(m_SolidRectShader, "u_scale"), scale);
+	glUniform1f(glGetUniformLocation(m_SolidRectShader, "u_scale"), 1);
 	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_color"), 1, 1, 1, 1);
 
 
 	int attributePosition = glGetAttribLocation(m_SolidRectShader, "a_position");
+	int attributeColor = glGetAttribLocation(m_SolidRectShader, "a_color");
 
 	glEnableVertexAttribArray(attributePosition);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPosition1);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos1);
 	glVertexAttribPointer(attributePosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glEnableVertexAttribArray(attributeColor);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor1);
+	glVertexAttribPointer(attributeColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
-	//glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPosition2);
+	glEnableVertexAttribArray(attributePosition);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos2);
 	glVertexAttribPointer(attributePosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(attributeColor);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor2);
+	glVertexAttribPointer(attributeColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	//glDisableVertexAttribArray(attribPosition);
 
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Renderer::DrawEffect()
+{
+	//Program select
+	for (int i = 0; i < 100; ++i) {
+		GLfloat posX = Utiles::GetRandomFLOAT(-1.f, 1.f);
+		GLfloat posY = Utiles::GetRandomFLOAT(-1.f, 1.f);
+		GLuint shaderProgram = m_particleShader;
+		glUseProgram(shaderProgram);
+
+		glUniform4f(glGetUniformLocation(shaderProgram, "u_trans"), posX, posY, 0, 1);
+		glUniform1f(glGetUniformLocation(shaderProgram, "u_scale"), 0.01);
+		glUniform4f(glGetUniformLocation(shaderProgram, "u_color"), 1, 1, 1, 1);
+
+
+		int attributePosition = glGetAttribLocation(shaderProgram, "a_position");
+		int attributeColor = glGetAttribLocation(shaderProgram, "a_color");
+
+		glEnableVertexAttribArray(attributePosition);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos1);
+		glVertexAttribPointer(attributePosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glEnableVertexAttribArray(attributeColor);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor1);
+		glVertexAttribPointer(attributeColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		glEnableVertexAttribArray(attributePosition);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos2);
+		glVertexAttribPointer(attributePosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(attributeColor);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor2);
+		glVertexAttribPointer(attributeColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+	}
 }
 
 void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
@@ -224,15 +268,34 @@ void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
 
 void Renderer::CreateVBO()
 {
-	float vertices1[] = { 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f };
+	float verticesPosition1[] = {	1.0f, 1.0f, 0.0f,
+									1.0f, -1.0f, 0.0f,
+									-1.0f, -1.0f, 0.f };
+	float verticesColor1[] = {		1.0f, 0.0f, 0.0f, 1.0f,
+									1.0f, 0.0f, 0.0f, 1.0f,
+									1.0f, 0.0f, 0.0f, 1.0f };
+	
+	// get Buffer Ojbect ID
+	glGenBuffers(1, &m_VBOPos1);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos1);	// bind to array buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPosition1), verticesPosition1, GL_STATIC_DRAW); // 
 
-	glGenBuffers(1, &m_VBOPosition1);	// get Buffer Ojbect ID
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPosition1);	// bind to array buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW); // 
+	glGenBuffers(1, &m_VBOColor1);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor1);	// bind to array buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesColor1), verticesColor1, GL_STATIC_DRAW); // 
 
-	float vertices2[] = { 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f, -1.0f, 0.0f };
+	float verticesPosition2[] = {	-1.0f, -1.0f, 0.0f,
+									1.0f, 1.0f, 0.0f,
+									-1.0f, 1.0f, 0.f };
+	float verticesColor2[] = {		1.0f, 0.0f, 0.0f, 1.0f,
+									1.0f, 0.0f, 0.0f, 1.0f,
+									1.0f, 0.0f, 0.0f, 1.0f };
 
-	glGenBuffers(1, &m_VBOPosition2);	// get Buffer Ojbect ID
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPosition2);	// bind to array buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW); // 
+	glGenBuffers(1, &m_VBOPos2);	// get Buffer Ojbect ID
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos2);	// bind to array buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPosition2), verticesPosition2, GL_STATIC_DRAW); // 
+
+	glGenBuffers(1, &m_VBOColor2);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor2);	// bind to array buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesColor2), verticesColor2, GL_STATIC_DRAW); // 
 }

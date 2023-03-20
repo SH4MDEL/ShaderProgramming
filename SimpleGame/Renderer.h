@@ -1,11 +1,5 @@
 #pragma once
-
-#include <string>
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
-
-#include "Dependencies\glew.h"
+#include "stdafx.h"
 
 class Renderer
 {
@@ -16,6 +10,7 @@ public:
 	bool IsInitialized();
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
 	void Render();
+	void DrawEffect();
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -34,7 +29,10 @@ private:
 
 	GLuint m_VBORect = 0;
 	GLuint m_SolidRectShader = 0;
-	GLuint m_VBOPosition1 = 0;
-	GLuint m_VBOPosition2 = 0;
+	GLuint m_particleShader = 0;
+	GLuint m_VBOPos1 = 0;
+	GLuint m_VBOPos2 = 0;
+	GLuint m_VBOColor1 = 0;
+	GLuint m_VBOColor2 = 0;
 };
 

@@ -16,27 +16,57 @@
     <Filter Include="소스 파일\Shaders">
       <UniqueIdentifier>{aa86e47f-445f-4440-9a76-173363b46c4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\Mesh">
+      <UniqueIdentifier>{b77ec3ed-2e0b-4cd7-96c7-4df6f0a93b50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Mesh">
+      <UniqueIdentifier>{f8a45d2b-15ac-4542-9658-1365984a02d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Object">
+      <UniqueIdentifier>{5d03c548-f7fc-478c-809e-c5ce0ab6aa19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Object">
+      <UniqueIdentifier>{f8191d4f-fc87-4b69-87d2-68bf68e0de49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Framework">
+      <UniqueIdentifier>{4fc79ba8-70b3-437b-b129-124047548af9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Framework">
+      <UniqueIdentifier>{48698151-c2eb-4806-8726-34781d518bcd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="mesh.h">
+      <Filter>헤더 파일\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>헤더 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>헤더 파일\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleGame.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="mesh.cpp">
+      <Filter>소스 파일\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleGame.cpp">
+      <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>소스 파일\Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -44,6 +74,12 @@
       <Filter>소스 파일\Shaders</Filter>
     </None>
     <None Include="Shaders\SolidRect.vs">
+      <Filter>소스 파일\Shaders</Filter>
+    </None>
+    <None Include="Shaders\ParticleRect.fs">
+      <Filter>소스 파일\Shaders</Filter>
+    </None>
+    <None Include="Shaders\ParticleRect.vs">
       <Filter>소스 파일\Shaders</Filter>
     </None>
   </ItemGroup>

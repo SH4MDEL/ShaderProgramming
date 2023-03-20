@@ -7,12 +7,8 @@ it under the terms of the What The Hell License. Do it plz.
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY.
 */
-
+#pragma once
 #include "stdafx.h"
-#include <iostream>
-#include "Dependencies\glew.h"
-#include "Dependencies\freeglut.h"
-
 #include "Renderer.h"
 
 Renderer *g_Renderer = NULL;
@@ -24,7 +20,7 @@ void RenderScene(void)
 
 	// Renderer Test
 	//g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-	g_Renderer->Render();
+	g_Renderer->DrawEffect();
 
 	glutSwapBuffers();
 }
