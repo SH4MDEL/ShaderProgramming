@@ -4,7 +4,6 @@
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
 	Initialize(windowSizeX, windowSizeY);
-	CreateVBO();
 }
 
 
@@ -28,6 +27,27 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	if (m_SolidRectShader > 0 && m_VBORect > 0)
 	{
 		m_Initialized = true;
+	}
+
+	BuildObjects();
+}
+
+void Renderer::BuildObjects()
+{
+	auto mesh = make_shared<Mesh>(m_particleShader);
+
+	for (int i = 0; i < 1000; ++i) {
+		GLfloat posX = Utiles::GetRandomFLOAT(-1.f, 1.f);
+		GLfloat posY = Utiles::GetRandomFLOAT(-1.f, 1.f);
+
+		auto object = make_shared<Object>(
+			m_particleShader, 
+			Utiles::FLOAT4{ posX, posY, 0.f, 1.f }, 
+			Utiles::FLOAT4{ posX, posY, 1.f, 1.f },
+			GLfloat{ 0.01f });
+
+		object->SetMesh(mesh);
+		m_objects.push_back(object);
 	}
 }
 
@@ -156,107 +176,18 @@ GLuint Renderer::CompileShaders(char* filenameVS, char* filenameFS)
 
 	glUseProgram(ShaderProgram);
 	std::cout << filenameVS << ", " << filenameFS << " Shader compiling is done.";
+	m_shaderProgram = ShaderProgram;
 
 	return ShaderProgram;
 }
 
-void Renderer::DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a)
-{
-	float newX, newY;
-
-	GetGLPosition(x, y, &newX, &newY);
-
-	//Program select
-	glUseProgram(m_SolidRectShader);
-
-	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_trans"), newX, newY, 0, size);
-	glUniform1f(glGetUniformLocation(m_SolidRectShader, "u_scale"), newX);
-	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_color"), r, g, b, a);
-
-	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
-	glEnableVertexAttribArray(attribPosition);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
-
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	glDisableVertexAttribArray(attribPosition);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 void Renderer::Render()
 {
-	//Program select
-	glUseProgram(m_SolidRectShader);
-
-	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_trans"), 0, 0, 0, 1);
-	glUniform1f(glGetUniformLocation(m_SolidRectShader, "u_scale"), 1);
-	glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_color"), 1, 1, 1, 1);
-
-
-	int attributePosition = glGetAttribLocation(m_SolidRectShader, "a_position");
-	int attributeColor = glGetAttribLocation(m_SolidRectShader, "a_color");
-
-	glEnableVertexAttribArray(attributePosition);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos1);
-	glVertexAttribPointer(attributePosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	glEnableVertexAttribArray(attributeColor);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor1);
-	glVertexAttribPointer(attributeColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	glEnableVertexAttribArray(attributePosition);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos2);
-	glVertexAttribPointer(attributePosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(attributeColor);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor2);
-	glVertexAttribPointer(attributeColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	//glDisableVertexAttribArray(attribPosition);
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void Renderer::DrawEffect()
-{
-	//Program select
-	for (int i = 0; i < 100; ++i) {
-		GLfloat posX = Utiles::GetRandomFLOAT(-1.f, 1.f);
-		GLfloat posY = Utiles::GetRandomFLOAT(-1.f, 1.f);
-		GLuint shaderProgram = m_particleShader;
-		glUseProgram(shaderProgram);
-
-		glUniform4f(glGetUniformLocation(shaderProgram, "u_trans"), posX, posY, 0, 1);
-		glUniform1f(glGetUniformLocation(shaderProgram, "u_scale"), 0.01);
-		glUniform4f(glGetUniformLocation(shaderProgram, "u_color"), 1, 1, 1, 1);
-
-
-		int attributePosition = glGetAttribLocation(shaderProgram, "a_position");
-		int attributeColor = glGetAttribLocation(shaderProgram, "a_color");
-
-		glEnableVertexAttribArray(attributePosition);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos1);
-		glVertexAttribPointer(attributePosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glEnableVertexAttribArray(attributeColor);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor1);
-		glVertexAttribPointer(attributeColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		glEnableVertexAttribArray(attributePosition);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos2);
-		glVertexAttribPointer(attributePosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(attributeColor);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor2);
-		glVertexAttribPointer(attributeColor, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+	static float time = 0.f;
+	time += 0.004;
+	glUniform1f(glGetUniformLocation(m_shaderProgram, "u_timeElapsed"), time);
+	for (const auto& object : m_objects) {
+		object->Render();
 	}
 }
 
@@ -264,38 +195,4 @@ void Renderer::GetGLPosition(float x, float y, float *newX, float *newY)
 {
 	*newX = x * 2.f / m_WindowSizeX;
 	*newY = y * 2.f / m_WindowSizeY;
-}
-
-void Renderer::CreateVBO()
-{
-	float verticesPosition1[] = {	1.0f, 1.0f, 0.0f,
-									1.0f, -1.0f, 0.0f,
-									-1.0f, -1.0f, 0.f };
-	float verticesColor1[] = {		1.0f, 0.0f, 0.0f, 1.0f,
-									1.0f, 0.0f, 0.0f, 1.0f,
-									1.0f, 0.0f, 0.0f, 1.0f };
-	
-	// get Buffer Ojbect ID
-	glGenBuffers(1, &m_VBOPos1);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos1);	// bind to array buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPosition1), verticesPosition1, GL_STATIC_DRAW); // 
-
-	glGenBuffers(1, &m_VBOColor1);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor1);	// bind to array buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesColor1), verticesColor1, GL_STATIC_DRAW); // 
-
-	float verticesPosition2[] = {	-1.0f, -1.0f, 0.0f,
-									1.0f, 1.0f, 0.0f,
-									-1.0f, 1.0f, 0.f };
-	float verticesColor2[] = {		1.0f, 0.0f, 0.0f, 1.0f,
-									1.0f, 0.0f, 0.0f, 1.0f,
-									1.0f, 0.0f, 0.0f, 1.0f };
-
-	glGenBuffers(1, &m_VBOPos2);	// get Buffer Ojbect ID
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOPos2);	// bind to array buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPosition2), verticesPosition2, GL_STATIC_DRAW); // 
-
-	glGenBuffers(1, &m_VBOColor2);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOColor2);	// bind to array buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesColor2), verticesColor2, GL_STATIC_DRAW); // 
 }

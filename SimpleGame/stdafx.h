@@ -28,4 +28,11 @@ namespace Utiles {
 		uniform_real_distribution<GLfloat> dis{ min, max };
 		return dis(g_randomEngine);
 	}
+
+	struct FLOAT4 {
+		GLfloat x;
+		GLfloat y;
+		GLfloat z;
+		GLfloat w;
+	};
 }
