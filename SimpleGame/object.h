@@ -7,7 +7,7 @@ class Object
 {
 public:
 	Object();
-	Object(GLint shaderProgram, Utiles::FLOAT4 position, Utiles::FLOAT4 color, GLfloat scale);
+	Object(GLint shaderProgram, Utiles::FLOAT4 position, Utiles::FLOAT4 velocity, Utiles::FLOAT4 color, GLfloat scale);
 	~Object() = default;
 
 	void Render();
@@ -16,13 +16,18 @@ public:
 	void SetMesh(const shared_ptr<Mesh>& mesh);
 
 private:
-	GLint				m_shaderProgram;
+	GLint					m_shaderProgram;
 
-	Utiles::FLOAT4		m_position;
-	Utiles::FLOAT4		m_color;
-	GLfloat				m_scale;
+	Utiles::FLOAT4			m_position;
+	Utiles::FLOAT4			m_velocity;
+	Utiles::FLOAT4			m_color;
+	GLfloat					m_scale;
 
-	shared_ptr<Mesh>	m_mesh;
+	const GLfloat			m_lifeTime = 10.f;
+	const Utiles::FLOAT4	g_gravity = { 0.f, -9.8f, 0.f, 0.f };
+	GLfloat					m_age;
+
+	shared_ptr<Mesh>		m_mesh;
 	
 };
 

@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "object.h"
 #include "mesh.h"
+#include "timer.h"
 
 class Renderer
 {
@@ -10,6 +11,7 @@ public:
 	~Renderer();
 
 	bool IsInitialized();
+	void Update();
 	void Render();
 
 private:
@@ -27,6 +29,8 @@ private:
 	
 	unsigned int m_WindowSizeX = 0;
 	unsigned int m_WindowSizeY = 0;
+
+	unique_ptr<Timer>			m_timer;
 
 	vector<shared_ptr<Object>> m_objects;
 	GLuint m_shaderProgram;

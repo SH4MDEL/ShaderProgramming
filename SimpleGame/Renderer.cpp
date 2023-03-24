@@ -34,16 +34,25 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 
 void Renderer::BuildObjects()
 {
+	m_timer = make_unique<Timer>();
+	m_timer->Tick();
+
 	auto mesh = make_shared<Mesh>(m_particleShader);
 
 	for (int i = 0; i < 1000; ++i) {
-		GLfloat posX = Utiles::GetRandomFLOAT(-1.f, 1.f);
-		GLfloat posY = Utiles::GetRandomFLOAT(-1.f, 1.f);
+		//GLfloat colorX = Utiles::GetRandomFLOAT(0.f, 1.f);
+		//GLfloat colorY = Utiles::GetRandomFLOAT(0.f, 1.f);
+		//GLfloat colorZ = Utiles::GetRandomFLOAT(0.f, 1.f);
+
+		GLfloat veloX = Utiles::GetRandomFLOAT(-20.f, 20.f);
+		GLfloat veloY = Utiles::GetRandomFLOAT(15.f, 35.f);
 
 		auto object = make_shared<Object>(
 			m_particleShader, 
-			Utiles::FLOAT4{ posX, posY, 0.f, 1.f }, 
-			Utiles::FLOAT4{ posX, posY, 1.f, 1.f },
+			Utiles::FLOAT4{ 0.f, 0.f, 0.f, 1.f }, 
+			Utiles::FLOAT4{ veloX, veloY, 0.f, 0.f },
+			//Utiles::FLOAT4{ colorX, colorY, colorZ, 1.f },
+			Utiles::FLOAT4{ 1.f, 1.f, 1.f, 1.f },
 			GLfloat{ 0.01f });
 
 		object->SetMesh(mesh);
@@ -181,11 +190,18 @@ GLuint Renderer::CompileShaders(char* filenameVS, char* filenameFS)
 	return ShaderProgram;
 }
 
+void Renderer::Update()
+{
+	m_timer->Tick();
+	for (const auto& object : m_objects) {
+		object->Update(m_timer->GetDeltaTime());
+	}
+}
+
 void Renderer::Render()
 {
-	static float time = 0.f;
-	time += 0.004;
-	glUniform1f(glGetUniformLocation(m_shaderProgram, "u_timeElapsed"), time);
+	glUniform1f(glGetUniformLocation(m_shaderProgram, "u_timeElapsed"), m_timer->GetDeltaTime());
+
 	for (const auto& object : m_objects) {
 		object->Render();
 	}
